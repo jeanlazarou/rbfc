@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '../lib')
+
+require 'rbfc'
+require 'rbfc/transpiler'
+require 'rbfc/map_generator'
+
+require 'fileutils'
+
+module RBFC
+
+  output_dir = nil
+  
+  options = Options.new("brainfuck-program output-dir\n" +
+           "Transpile the 'brainfuck-program' program to JavaScript in " +
+           "the given directory.\n\n") do |opts|
+              opts.on( '-o', '--output out-dir', 'Output directory' ) do |dir|
+
+                unless File.directory?(dir)
+                  puts "Output directory not found"
+                  exit 3
+                end
+
+                output_dir = dir
+             end
+           end
+
+  unless output_dir
+    puts "Missing output directory"
+    exit 3
+  end
+
+  bytecode = compile(options.program_file)
+
+  js_name = File.basename(options.program_file) + ".js"
+  html_name = File.basename(options.program_file) + ".html"
+
+  js = RBFC::Transpiler.new.transpile(js_name, bytecode)
+  File.open(File.join(output_dir, js_name), "w").write(js.code);
+  
+  dir = File.join(File.dirname(__FILE__), '../public')
+  FileUtils.cp(File.join(dir, "runtime.js"), File.join(output_dir))
+
+  html = File
+    .read(File.join(dir, "index.html"))
+    .gsub("Brainfunky", options.program_file)
+    .gsub("program.js", js_name)
+
+  File.open(File.join(output_dir, html_name), "w").write(html);
+
+  map_file = File.join(output_dir, js_name + ".map")
+
+  js.source = open(options.program_file).readlines
+
+  MapGenerator.new.write(options.program_file, js, js_name, map_file)
+end

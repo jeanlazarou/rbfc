@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '../lib')
+
+require 'rbfc'
+
+module RBFC
+
+  options = Options.new("brainfuck-program [data-file]\n" +
+           "Run the 'brainfuck-program' program using the optional data file as input,\n" +
+           "defaults to standard input.\n\n")
+
+  $stdin = options.input_stream
+
+  execute options.program_file
+  
+end

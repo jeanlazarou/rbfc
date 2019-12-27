@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '../lib')
+
+require 'rbfc'
+
+module RBFC
+
+  options = Options.new("brainfuck-program\n" +
+           "Compile the 'brainfuck-program' program and ouput the bytecode.\n\n")
+
+  bytecode = compile(options.program_file)
+
+  p bytecode
+
+end

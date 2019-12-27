@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '../lib')
+
+require 'rbfc'
+
+module RBFC
+
+  options = Options.new("brainfuck-program\n" +
+           "Start debugger for the 'brainfuck-program' program.\n\n")
+  
+  debug options.program_file, options.input_stream
+
+end
